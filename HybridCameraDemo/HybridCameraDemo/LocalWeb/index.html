@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="format-detection" content="telephone=no">
+<meta name="msapplication-tap-highlight" content="no">
+<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+<title>自定义相机H5页面测试</title>
+<style>
+    html,body{background-color: rgba(0,0,0,0);width: 100%;height: 100%;padding: 0px;margin:0px;}
+    .cube{position: fixed;top:20%;left: 50%;width: 70px;height: 70px;margin-left: -35px;background-color: red;z-index: 1}
+    .list{padding: 20px 50px;box-sizing: border-box;position: fixed;bottom: 50px;left: 0px;width: 100%;z-index: 1}
+    .shadow{box-shadow: 2px 2px 6px #555;}
+    .btn{width: 45%;height: 48px;background-color: #5cb85c;display: inline-block;border-radius: 4px;text-align: center;line-height: 48px;color: #fff;user-select:none;-webkit-user-select:none;}
+    .btn.f{float: right;}
+    .model{position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;background-color: rgba(0,0,0,0.5);z-index: 2;display: none;}
+    .pic{position: absolute;width: 300px;height: 380px;top: 14%;left: 50%;margin-left: -150px;background-color: #fff;padding-top: 30px;}
+    .close{position: absolute;z-index: 9;color: #d9534f;width: 28px;height: 28px;line-height: 28px;text-align: center;right: 0px;top: 0px}
+    .content{width:100%; height:100%;overflow-x: hidden;overflow-y: auto;word-break: break-all;white-space: pre-wrap;padding: 4px;box-sizing: border-box;}
+    .content img{width: 100%;height: auto}
+
+</style>
+</head>
+<body>
+    <div class="cube shadow"></div>
+    <div class="list">
+	    <div class="btn f shadow r">摄像头开关</div>
+	    <div class="btn shadow l">取照片按钮</div>
+        <div class="btn shadow save">保存</div>
+    </div>
+    <div class="model">
+    	<div class="pic">
+    		<div class="close">&times;</div>
+    		<div class="content"></div>
+    	</div>
+    </div>
+    <script type="text/javascript">
+        function getSwitchCameraResult(arguments){
+            var result = arguments;
+            document.getElementsByClassName('r')[0].setAttribute('data-type',result);
+        }
+        
+        function TakePicture(arguments){
+            var pic = arguments;
+            if(
+               typeof pic === 'string' &&
+               pic.substring(0,10) == 'data:image' &&
+               pic.substring(16,22) == 'base64'
+               )
+            {
+                var img = new Image();
+                img.src = pic;
+                content.appendChild(img);
+                document.getElementsByClassName('save')[0].setAttribute('data-type',pic);
+            }else if(
+                typeof pic === 'string' ||
+                typeof pic === 'number')
+            {
+                content.innerHTML = pic;
+            }
+            else if( typeof pic === 'object')
+            {
+                content.innerHTML = 'Object';
+            }
+            else
+            {
+                content.innerHTML = 'Other';
+            }
+            model.style.display = 'block';
+        }
+    
+    	var model = document.getElementsByClassName('model')[0];
+    	var content = document.getElementsByClassName('content')[0];
+    	document.getElementsByClassName('close')[0].onclick = function(){
+    		model.style.display = 'none';
+    	}
+    	document.getElementsByClassName('l')[0].onclick = function(){
+            window.iosDelegate.getImage();
+    	}
+        document.getElementsByClassName('r')[0].onclick = function(){
+            if(this.getAttribute('data-type') == '1'){
+                SwitchCamera(0);
+            }
+            else{
+                SwitchCamera(1);
+            }
+        }
+        document.getElementsByClassName('save')[0].onclick = function(){
+            var pic = this.getAttribute('data-type');
+            SavePicture(pic);
+        }
+    </script>
+</body>
+</html>
